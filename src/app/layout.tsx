@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 import { Fira_Sans } from "next/font/google";
-import "./globals.css";
+import './globals.css'
 
 export const metadata: Metadata = {
   title: "Katsu",
-  description: "A Class Task Management Application",
+  description: "A Class Tasks Management Application",
 };
 
 const firaSans = Fira_Sans({
