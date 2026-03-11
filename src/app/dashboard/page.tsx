@@ -1231,7 +1231,10 @@ export default function DashboardPage() {
 										<input
 											type="checkbox"
 											checked={myCompletion?.isPublic ?? true}
-											onChange={(e) => db.updateCompletionVisibility(task.id, e.target.checked)}
+											onChange={(e) => {
+												e.stopPropagation();
+												db.updateCompletionVisibility(task.id, e.target.checked)
+											}}
 											className="w-3.5 h-3.5 accent-blue-600"
 										/>
 										<span className="text-xs text-slate-400">Let others see I completed this</span>
