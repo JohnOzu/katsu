@@ -2,10 +2,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { sendDeadlineEmail } from '@/src/lib/mailer';
 
-// This route is called daily by Vercel Cron.
-// It checks all tasks with upcoming deadlines and emails members
-// who have notifications enabled for that class and whose threshold matches.
-
 export async function GET(req: NextRequest) {
 	// Auth check — Vercel sends the CRON_SECRET as a bearer token
 	const authHeader = req.headers.get('x-cron-secret');
@@ -24,7 +20,7 @@ export async function GET(req: NextRequest) {
 	const maxDate = new Date(now);
 	maxDate.setDate(maxDate.getDate() + maxDays);
 
-	// 1. Fetch all tasks with deadlines in the next 7 days
+	// Fetch all tasks with deadlines in the next 7 days
 	const { data: tasks, error: tasksError } = await supabase
 		.from('tasks')
 		.select('id, name, deadline, class_id, classes(name)')
@@ -40,10 +36,10 @@ export async function GET(req: NextRequest) {
 		return NextResponse.json({ message: 'No upcoming tasks' });
 	}
 
-	// 2. Get all class IDs that have upcoming tasks
+	// Get all class IDs that have upcoming tasks
 	const classIds = [...new Set(tasks.map((t) => t.class_id))];
 
-	// 3. Fetch all class members in those classes who have notifications enabled
+	// Fetch all class members in those classes who have notifications enabled
 	const { data: members, error: membersError } = await supabase
         .from('class_members')
         .select('user_id, class_id, notifications_enabled, notification_thresholds')
@@ -59,7 +55,7 @@ export async function GET(req: NextRequest) {
         return NextResponse.json({ message: 'No members with notifications enabled' });
     }
 
-    // 4. Fetch profiles for those members
+    // Fetch profiles for those members
     const userIds = [...new Set(members.map(m => m.user_id))];
     const { data: profiles, error: profilesError } = await supabase
         .from('profiles')
@@ -73,7 +69,7 @@ export async function GET(req: NextRequest) {
 
     const profileMap = Object.fromEntries((profiles ?? []).map(p => [p.id, p]));
 
-	// 4. Build a map: userId -> { email, name, tasks[] }
+	// Build a map: userId -> { email, name, tasks[] }
 	const emailMap: Record<
 		string,
 		{
@@ -133,7 +129,7 @@ export async function GET(req: NextRequest) {
 		}
 	}
 
-	// 5. Send one email per user (batching all their tasks across all classes)
+	// Send one email per user (batching all their tasks across all classes)
 	const results = await Promise.allSettled(
 		Object.entries(emailMap).map(([, { email, name, tasks: userTasks }]) =>
 			sendDeadlineEmail({ to: email, userName: name, tasks: userTasks }),
