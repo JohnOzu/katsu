@@ -3,6 +3,7 @@ import { Fira_Sans } from "next/font/google";
 import './globals.css'
 import UserProvider from "../components/providers/UserProvider";
 import { Toaster } from 'sonner'
+import { ThemeProvider } from 'next-themes';
 
 export const metadata: Metadata = {
   title: "Katsu",
@@ -24,14 +25,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body
         className={`${firaSans.variable} antialiased`}
       >
-        <Toaster richColors position="bottom-right" />
-        <UserProvider>
-          {children}
-        </UserProvider>
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          <Toaster richColors position="bottom-right" />
+          <UserProvider>
+            {children}
+          </UserProvider>
+        </ThemeProvider>
       </body>
     </html>
   );
