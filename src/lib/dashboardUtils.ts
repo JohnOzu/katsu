@@ -23,3 +23,19 @@ export function deadlineLabel(deadline: string | null) {
 	if (days <= 7)  return { label: `${days}d left`,  color: 'text-blue-600 bg-blue-50 border border-blue-100' };
 	return { label: d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }), color: 'text-slate-500 bg-slate-100 border border-slate-200' };
 }
+
+// ─── Generic helpers ───────────────────────────────────────────────────────────
+
+export function stripMarkdown(text: string): string {
+    return text
+        .replace(/#{1,6}\s+/g, '')        // headers
+        .replace(/\*\*(.*?)\*\*/g, '$1')  // bold
+        .replace(/\*(.*?)\*/g, '$1')      // italic
+        .replace(/`{1,3}(.*?)`{1,3}/g, '$1') // code
+        .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1') // links
+        .replace(/^[-*+]\s+/gm, '')       // list bullets
+        .replace(/^\d+\.\s+/gm, '')       // numbered lists
+        .replace(/^>\s+/gm, '')           // blockquotes
+        .replace(/---/g, '')              // hr
+        .trim();
+}
