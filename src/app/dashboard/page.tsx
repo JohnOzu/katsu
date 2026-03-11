@@ -16,6 +16,7 @@ import MDEditor from '@uiw/react-md-editor';
 import ReactMarkdown from 'react-markdown';
 import { useTheme } from 'next-themes';
 import { stripMarkdown } from '@/src/lib/dashboardUtils';
+import NotificationPreferences from '@/src/components/ui/NotificationPreferences';
 
 // ─── Permission helpers ────────────────────────────────────────────────────────
 
@@ -690,6 +691,15 @@ export default function DashboardPage() {
 															</button>
 														</>
 													)}
+													{isMe && db.selectedClass && db.selectedClass.myRole !== 'owner' && (
+														<button
+															onClick={() => db.removeMember(db.user!.id)}
+															className="flex items-center space-x-1.5 px-3 py-1.5 text-xs font-medium text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors cursor-pointer"
+														>
+															<svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" /></svg>
+															<span>Leave</span>
+														</button>
+													)}
 												</div>
 											</div>
 										);
@@ -713,6 +723,7 @@ export default function DashboardPage() {
 										))}
 									</div>
 								</div>
+								<NotificationPreferences classId={db.selectedClass!.id} />
 							</div>
 						)}
 
