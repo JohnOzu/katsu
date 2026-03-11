@@ -47,7 +47,7 @@ export function useDashboard() {
 	const [completions, setCompletions] = useState<TaskCompletion[]>([]);
 	const [invites, setInvites] = useState<ClassInvite[]>([]);
 	const [loading, setLoading] = useState(true);
-	const [activeTab, setActiveTab] = useState<'tasks' | 'subjects' | 'members'>('tasks');
+	const [activeTab, setActiveTab] = useState<'tasks' | 'subjects' | 'members' | 'calendar'>('tasks');
 
 	// ── Modal visibility ───────────────────────────────────────────────────────
 
@@ -262,14 +262,21 @@ export function useDashboard() {
 
 	async function saveTask() {
 		if (!taskForm.name.trim()) return toast.error('Task name is required');
+
+		// Convert local datetime to ISO string with timezone offset
+		const deadline = taskForm.deadline
+			? new Date(taskForm.deadline).toISOString()
+			: null;
+
 		const payload = {
 			name: taskForm.name,
 			description: taskForm.description || null,
-			deadline: taskForm.deadline || null,
+			deadline,  // ← use the converted value
 			subject_id: taskForm.subject_id || null,
 			class_id: selectedClass!.id,
 			created_by: user!.id,
 		};
+
 		if (editingTask) {
 			const { error } = await supabase.from('tasks').update(payload).eq('id', editingTask.id);
 			if (error) return toast.error('Failed to update task');
