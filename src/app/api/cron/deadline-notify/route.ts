@@ -108,15 +108,18 @@ export async function GET(req: NextRequest) {
 		}
 
 		for (const task of matchingTasks) {
-			const deadline = new Date(task.deadline);
-            const taskClass = task.classes.find(tc => tc.name)
-			const daysLeft = Math.ceil(
-				(deadline.getTime() - now.getTime()) / (1000 * 60 * 60 * 24),
-			);
+            const deadline = new Date(task.deadline);
+            const classesData = task.classes as { name: string }[] | { name: string } | null;
+            const className = Array.isArray(classesData)
+                ? classesData[0]?.name ?? 'Unknown Class'
+                : classesData?.name ?? 'Unknown Class';
+            const daysLeft = Math.ceil(
+                (deadline.getTime() - now.getTime()) / (1000 * 60 * 60 * 24),
+            );
 
-			emailMap[member.user_id].tasks.push({
-				taskName: task.name,
-				className: taskClass?.name.name ?? 'Unknown Class',
+            emailMap[member.user_id].tasks.push({
+                taskName: task.name,
+                className,
 				deadline: deadline.toLocaleDateString('en-US', {
 					weekday: 'short',
 					month: 'short',
