@@ -45,28 +45,33 @@ export async function GET(req: NextRequest) {
 
 	// 3. Fetch all class members in those classes who have notifications enabled
 	const { data: members, error: membersError } = await supabase
-		.from('class_members')
-		.select(`
-			user_id,
-			class_id,
-			notifications_enabled,
-			notification_thresholds,
-			profiles:user_id (
-				full_name,
-				email
-			)
-		`)
-		.in('class_id', classIds)
-		.eq('notifications_enabled', true);
+        .from('class_members')
+        .select('user_id, class_id, notifications_enabled, notification_thresholds')
+        .in('class_id', classIds)
+        .eq('notifications_enabled', true);
 
-	if (membersError) {
-		console.error('[cron] Failed to fetch members:', membersError);
-		return NextResponse.json({ error: 'Failed to fetch members' }, { status: 500 });
-	}
+    if (membersError) {
+        console.error('[cron] Failed to fetch members:', membersError);
+        return NextResponse.json({ error: 'Failed to fetch members' }, { status: 500 });
+    }
 
-	if (!members || members.length === 0) {
-		return NextResponse.json({ message: 'No members with notifications enabled' });
-	}
+    if (!members || members.length === 0) {
+        return NextResponse.json({ message: 'No members with notifications enabled' });
+    }
+
+    // 4. Fetch profiles for those members
+    const userIds = [...new Set(members.map(m => m.user_id))];
+    const { data: profiles, error: profilesError } = await supabase
+        .from('profiles')
+        .select('id, full_name, email')
+        .in('id', userIds);
+
+    if (profilesError) {
+        console.error('[cron] Failed to fetch profiles:', profilesError);
+        return NextResponse.json({ error: 'Failed to fetch profiles' }, { status: 500 });
+    }
+
+    const profileMap = Object.fromEntries((profiles ?? []).map(p => [p.id, p]));
 
 	// 4. Build a map: userId -> { email, name, tasks[] }
 	const emailMap: Record<
@@ -79,8 +84,8 @@ export async function GET(req: NextRequest) {
 	> = {};
 
 	for (const member of members) {
-		const profile = member.profiles.find((p) => p.email)
-		if (!profile?.email) continue;
+		const profile = profileMap[member.user_id];
+        if (!profile?.email) continue;
 
 		const thresholds: number[] = member.notification_thresholds ?? [1, 3, 7];
 
