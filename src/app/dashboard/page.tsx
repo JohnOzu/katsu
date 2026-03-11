@@ -510,7 +510,7 @@ export default function DashboardPage() {
 														</div>
 
 														<div className="hidden group-hover:flex items-center space-x-1">
-															{canUpdate(db.selectedClass?.myRole!) && (
+															{db.selectedClass && canUpdate(db.selectedClass.myRole) && (
 																<button 
 																	onClick={(e) => {
 																		e.stopPropagation();
@@ -521,7 +521,7 @@ export default function DashboardPage() {
 																	<svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
 																</button>
 															)}
-															{canDelete(db.selectedClass?.myRole!) && (
+															{db.selectedClass && canDelete(db.selectedClass?.myRole) && (
 																<button 
 																	onClick={(e) => {
 																		e.stopPropagation();
@@ -570,12 +570,12 @@ export default function DashboardPage() {
 															<svg className="w-5 h-5 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>
 														</div>
 														<div className="hidden group-hover:flex items-center space-x-1">
-															{canUpdate(db.selectedClass.myRole!) && (
+															{db.selectedClass && canUpdate(db.selectedClass.myRole!) && (
 																<button onClick={() => db.openEditSubject(s)} className="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/30 text-slate-400 hover:text-blue-600 transition-colors cursor-pointer">
 																	<svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
 																</button>
 															)}
-															{canDelete(db.selectedClass.myRole!) && (
+															{db.selectedClass && canDelete(db.selectedClass.myRole!) && (
 																<button onClick={() => db.deleteSubject(s)} className="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 text-slate-400 hover:text-red-500 transition-colors cursor-pointer">
 																	<svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
 																</button>
@@ -674,7 +674,7 @@ export default function DashboardPage() {
 													<span className={`text-xs px-2.5 py-1 rounded-lg font-semibold capitalize ${roleBadge[m.role]}`}>{m.role}</span>
 												</div>
 												<div className="col-span-3 flex items-center justify-end space-x-2">
-													{db.selectedClass.myRole! === 'owner' && !isMe && (
+													{db.selectedClass && db.selectedClass.myRole === 'owner' && !isMe && (
 														<>
 															<select
 																value={m.role}
@@ -882,7 +882,7 @@ export default function DashboardPage() {
 															<div key={task.id} className={`p-3 rounded-2xl border transition-all ${isDone ? 'bg-green-50 dark:bg-green-900/10 border-green-200 dark:border-green-800' : 'bg-slate-50 dark:bg-slate-700/50 border-slate-100 dark:border-slate-700'}`}>
 																<div className="flex items-start space-x-2.5">
 																	<button
-																		onClick={() => {
+																		onClick={(e) => {
 																			e.stopPropagation();
 																			db.toggleCompletion(task, true)}
 																		}
