@@ -12,8 +12,9 @@ export default function Avatar({
                 alt={profile.fullName ?? 'Member'}
                 width={size}
                 height={size}
-                className="rounded-full ring-2 ring-slate-200 object-cover flex-shrink-0"
+                className="rounded-full ring-2 ring-slate-200 dark:ring-slate-600 object-cover shrink-0"
                 style={{ width: size, height: size }}
+                title={profile.fullName}
             />
         );
     }
