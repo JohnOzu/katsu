@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Fira_Sans } from "next/font/google";
 import './globals.css'
+import UserProvider from "../components/providers/UserProvider";
+import { Toaster } from 'sonner'
 
 export const metadata: Metadata = {
   title: "Katsu",
@@ -26,7 +28,10 @@ export default function RootLayout({
       <body
         className={`${firaSans.variable} antialiased`}
       >
-        {children}
+        <Toaster richColors position="bottom-right" />
+        <UserProvider>
+          {children}
+        </UserProvider>
       </body>
     </html>
   );
