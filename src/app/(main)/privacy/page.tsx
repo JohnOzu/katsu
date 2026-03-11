@@ -44,7 +44,7 @@ export default function PrivacyPage() {
 
 				<div className="mt-10 bg-linear-to-br from-blue-600 to-indigo-700 rounded-2xl p-8 text-white text-center">
 					<h3 className="text-xl font-black mb-2">Questions about your privacy?</h3>
-					<p className="text-blue-100 text-sm mb-4">We're happy to help clarify anything in this policy.</p>
+					<p className="text-blue-100 text-sm mb-4">We are happy to help clarify anything in this policy.</p>
 					<Link href="/contact" className="inline-block px-6 py-2.5 bg-white text-blue-600 rounded-xl font-semibold text-sm hover:shadow-lg transition-all transform hover:-translate-y-0.5">
 						Contact Us
 					</Link>
