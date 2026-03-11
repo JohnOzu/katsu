@@ -515,7 +515,8 @@ export default function DashboardPage() {
 																<button 
 																	onClick={(e) => {
 																		e.stopPropagation();
-																		db.openEditTask(task)
+																		db.openEditTask(task);
+																		console.log();
 																	}} 
 																	className="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/30 text-slate-400 hover:text-blue-600 transition-colors cursor-pointer"
 																>
