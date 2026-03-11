@@ -7,6 +7,7 @@ import { createClient } from '@lib/supabase';
 import { useUserStore } from '@lib/stores/user-store';
 import { toast } from 'sonner';
 import ThemeToggle from '@/src/components/ui/ThemeToggle';
+import { DBClassInviteForJoin, mapClassInviteForJoin } from '@/src/lib/mappers';
 
 export default function JoinPage() {
 	const router = useRouter();
@@ -53,8 +54,14 @@ export default function JoinPage() {
 			return;
 		}
 
-		setClassPreview({ name: (data as any).classes.name, id: data.class_id, inviteId: data.id });
-		setStep('password');
+		const mappedData = mapClassInviteForJoin(data as unknown as DBClassInviteForJoin);
+
+		if (mappedData.classes?.name) {
+			setClassPreview({ name: mappedData.classes.name, id: data.class_id, inviteId: data.id });
+			setStep('password');
+		} else {
+			console.error("Something went wrong");
+		}
 	}
 
 	async function joinClass() {
@@ -91,6 +98,7 @@ export default function JoinPage() {
 
 	useEffect(() => {
 		if (hydrated && user && codeFromUrl) {
+			// eslint-disable-next-line react-hooks/set-state-in-effect
 			lookupCode(codeFromUrl);
 		}
 	}, [hydrated, user]);

@@ -3,10 +3,18 @@ export type Role = 'owner' | 'editor' | 'contributor' | 'member';
 // ─── Raw DB types ──────────────────────────────────────────────────────────
 
 export type DBClassInvite = {
-    id: string;
-    class_id: string;
-    code: string;
-    password: string;
+  id: string;
+  class_id: string;
+  code: string;
+  password: string;
+}
+
+export type DBClassInviteForJoin = {
+  id: string;
+  class_id: string;
+  classes: {
+    name: string
+  } | null  // single object, not array
 }
 
 export type DBClassMember = {
@@ -112,6 +120,12 @@ export const mapClassInvite = (i: DBClassInvite) => ({
   password: i.password,
 });
 
+export const mapClassInviteForJoin = (j: DBClassInviteForJoin) => ({
+  id: j.id,
+  classId: j.class_id,
+  classes: j.classes
+})
+
 // ─── App types ─────────────────────────────────────────────────────────────
 
 export type ClassItem = ReturnType<typeof mapClass>;
@@ -121,3 +135,4 @@ export type Subject = ReturnType<typeof mapSubject>;
 export type Task = ReturnType<typeof mapTask>;
 export type TaskCompletion = ReturnType<typeof mapTaskCompletion>;
 export type ClassInvite = ReturnType<typeof mapClassInvite>;
+export type ClassInviteForJoin = ReturnType<typeof mapClassInviteForJoin>;
