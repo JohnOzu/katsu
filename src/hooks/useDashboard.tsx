@@ -18,7 +18,7 @@ import {
 	mapClassInvite,
 	mapTaskCompletion,
 } from '@lib/mappers';
-import { generateCode, generatePassword } from '@lib/dashboardUtils';
+import { generateCode, generatePassword, toLocalDatetimeString } from '@lib/dashboardUtils';
 import { toast } from 'sonner';
 
 // ─── Form state types ─────────────────────────────────────────────────────────
@@ -241,13 +241,15 @@ export function useDashboard() {
 		setShowTaskModal(true);
 	}
 
-	function openEditTask(t: Task) {
-		setEditingTask(t);
+	function openEditTask(task: Task) {
+		setEditingTask(task);
 		setTaskForm({
-			name: t.name,
-			description: t.description ?? '',
-			deadline: t.deadline ? t.deadline.slice(0, 16) : '',
-			subject_id: t.subjectId ?? '',
+			name: task.name,
+			description: task.description ?? '',
+			deadline: task.deadline 
+				? toLocalDatetimeString(new Date(task.deadline))  // ← convert UTC → local
+				: '',
+			subject_id: task.subjectId ?? '',
 		});
 		setShowTaskModal(true);
 	}
