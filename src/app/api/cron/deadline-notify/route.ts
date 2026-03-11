@@ -8,10 +8,10 @@ import { sendDeadlineEmail } from '@/src/lib/mailer';
 
 export async function GET(req: NextRequest) {
 	// Auth check — Vercel sends the CRON_SECRET as a bearer token
-	const authHeader = req.headers.get('authorization');
-	if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-		return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-	}
+	const authHeader = req.headers.get('x-cron-secret');
+    if (authHeader !== process.env.CRON_SECRET) {
+        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
 
 	const supabase = createClient(
 		process.env.NEXT_PUBLIC_SUPABASE_URL!,
