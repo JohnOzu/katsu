@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useState, useMemo } from 'react';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useUserStore } from '@lib/stores/user-store';
 import { type Role } from '@lib/mappers'
@@ -17,6 +16,7 @@ import ReactMarkdown from 'react-markdown';
 import { useTheme } from 'next-themes';
 import { stripMarkdown } from '@/src/lib/dashboardUtils';
 import NotificationPreferences from '@/src/components/ui/NotificationPreferences';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 const canCreate = (role: Role) => ['owner', 'editor', 'contributor'].includes(role);
 const canUpdate = (role: Role) => ['owner', 'editor'].includes(role);
@@ -35,6 +35,8 @@ type SortOrder        = 'deadline-asc' | 'deadline-desc' | 'name-asc' | 'created
 
 export default function DashboardPage() {
 	const router = useRouter();
+	const searchParams = useSearchParams();
+	const params = new URLSearchParams(searchParams.toString());
 	const hydrated = useUserStore((state) => state.hydrated);
 	const db = useDashboard();
 
@@ -47,6 +49,11 @@ export default function DashboardPage() {
 	const [selectedCalendarDay, setSelectedCalendarDay] = useState<Date | null>(null);
 	const [viewingTask, setViewingTask] = useState<typeof db.tasks[0] | null>(null);
 	const [sidebarOpen, setSidebarOpen] = useState(false);
+	const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+	const [isSubmittingClass, setIsSubmittingClass] = useState(false);
+	const [isSubmittingSubject, setIsSubmittingSubject] = useState(false);
+	const [isSubmittingInvite, setIsSubmittingInvite] = useState(false);
+	const [isSubmittingJoin, setIsSubmittingJoin] = useState(false);
 
 	const { resolvedTheme } = useTheme();
 
@@ -66,6 +73,26 @@ export default function DashboardPage() {
 	useEffect(() => {
 		if (db.user) db.loadClasses();
 	}, [db.user]);
+
+	useEffect(() => {
+		if (!db.classes.length) return;
+		const classId = searchParams.get('class');
+		const tab = searchParams.get('tab');
+		if (classId) {
+			const found = db.classes.find(c => c.id === classId);
+			if (found) db.selectClass(found);
+			if (tab) db.setActiveTab(tab as 'tasks' | 'subjects' | 'members' | 'calendar');
+		}
+	}, [db.classes]);
+
+	useEffect(() => {
+		if (!db.tasks.length) return;
+		const taskId = searchParams.get('task');
+		if (taskId) {
+			const task = db.tasks.find(t => t.id === taskId);
+			if (task) setViewingTask(task);
+		}
+	}, [db.tasks]);
 
 	const filteredTasks = useMemo(() => {
 		let result = [...db.tasks];
@@ -178,7 +205,12 @@ export default function DashboardPage() {
 						{db.classes.map((c) => (
 							<div
 								key={c.id}
-								onClick={() => { db.selectClass(c); setSidebarOpen(false); }}
+								onClick={() => {
+									db.selectClass(c);
+									params.set('class', c.id);
+									router.replace(`/dashboard?${params.toString()}`, { scroll: false });
+									setSidebarOpen(false); 
+								}}
 								className={`group relative flex items-center px-3 py-2.5 rounded-xl cursor-pointer transition-all ${db.selectedClass?.id === c.id ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300' : 'hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300'}`}
 							>
 								<div className="flex-1 min-w-0">
@@ -316,7 +348,15 @@ export default function DashboardPage() {
 						{/* Tabs */}
 						<div className="flex items-center space-x-1 bg-slate-100 dark:bg-slate-800 p-1 rounded-2xl mb-6 overflow-x-auto w-full sm:w-fit">
 							{(['tasks', 'subjects', 'members', 'calendar'] as const).map((tab) => (
-								<button key={tab} onClick={() => db.setActiveTab(tab)} className={`px-4 sm:px-5 py-2 rounded-xl text-sm font-semibold transition-all capitalize cursor-pointer whitespace-nowrap ${db.activeTab === tab ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'}`}>
+								<button 
+									key={tab} 
+									onClick={() => {
+										db.setActiveTab(tab);
+										params.set('tab', tab);
+										router.replace(`/dashboard?${params.toString()}`, { scroll: false });
+									}} 
+									className={`px-4 sm:px-5 py-2 rounded-xl text-sm font-semibold transition-all capitalize cursor-pointer whitespace-nowrap ${db.activeTab === tab ? 'bg-white dark:bg-slate-700 text-slate-900 dark:text-white shadow-sm' : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'}`}
+								>
 									{tab}{tab === 'members' && <span className="ml-1.5 text-xs opacity-60">({db.members.length})</span>}
 								</button>
 							))}
@@ -449,7 +489,11 @@ export default function DashboardPage() {
 											return (
 												<div
 													key={task.id}
-													onClick={() => setViewingTask(task)}
+													onClick={() => {
+														setViewingTask(task)
+														params.set('task', task.id);
+														router.replace(`/dashboard?${params.toString()}`, { scroll: false });
+													}}
 													className={`group bg-white dark:bg-slate-800 rounded-2xl border transition-all hover:shadow-md hover:scale-101 cursor-pointer ${isDone ? 'border-green-200 dark:border-green-800 bg-green-50/30 dark:bg-green-900/10' : 'border-slate-100 dark:border-slate-700'}`}
 												>
 													<div className="flex items-start p-4 space-x-3 sm:space-x-4">
@@ -870,25 +914,69 @@ export default function DashboardPage() {
 				)}
 			</main>
 
-			{/* ── Modals (unchanged) ── */}
+			{/* ── Class Modal ── */}
 			{db.showClassModal && (
 				<Modal title={db.editingClass ? 'Edit Class' : 'Create Class'} onClose={db.closeClassModal}>
 					<div className="space-y-4">
 						<CustomizedInput label="Class Name" placeholder="e.g. BSCS 3-A" value={db.classForm.name} onChange={e => db.setClassForm(f => ({ ...f, name: e.target.value }))} />
 						<CustomizedTextArea label="Description (optional)" placeholder="What's this class about?" value={db.classForm.description} onChange={e => db.setClassForm(f => ({ ...f, description: e.target.value }))} />
-						<button onClick={db.saveClass} className="w-full py-3 bg-linear-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-semibold hover:shadow-lg transition-all cursor-pointer">{db.editingClass ? 'Save Changes' : 'Create Class'}</button>
+						<button
+							onClick={async () => { 
+								setIsSubmittingClass(true); 
+								await db.saveClass(); 
+								setIsSubmittingClass(false); 
+							}}
+							disabled={isSubmittingClass}
+							className="w-full py-3 bg-linear-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-semibold hover:shadow-lg transition-all cursor-pointer disabled:opacity-70"
+						>
+							{isSubmittingClass ? (
+								<span className="flex items-center justify-center gap-2">
+									<svg className="w-4 h-4 animate-spin shrink-0" viewBox="0 0 24 24" fill="none">
+										<circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+										<path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+									</svg>
+									<span className="text-sm sm:text-base">{db.editingClass ? 'Saving...' : 'Creating...'}</span>
+								</span>
+							) : (
+								<span className="text-sm sm:text-base">{db.editingClass ? 'Save Changes' : 'Create Class'}</span>
+							)}
+						</button>
 					</div>
 				</Modal>
 			)}
+
+			{/* ── Subject Modal ── */}
 			{db.showSubjectModal && (
 				<Modal title={db.editingSubject ? 'Edit Subject' : 'Add Subject'} onClose={db.closeSubjectModal}>
 					<div className="space-y-4">
 						<CustomizedInput label="Subject Name" placeholder="e.g. Mathematics, English" value={db.subjectForm.name} onChange={e => db.setSubjectForm(f => ({ ...f, name: e.target.value }))} />
 						<CustomizedTextArea label="Description (optional)" placeholder="Brief description..." value={db.subjectForm.description} onChange={e => db.setSubjectForm(f => ({ ...f, description: e.target.value }))} />
-						<button onClick={db.saveSubject} className="w-full py-3 bg-linear-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-semibold hover:shadow-lg transition-all cursor-pointer">{db.editingSubject ? 'Save Changes' : 'Add Subject'}</button>
+						<button
+							onClick={async () => { 
+								setIsSubmittingSubject(true); 
+								await db.saveSubject(); 
+								setIsSubmittingSubject(false); 
+							}}
+							disabled={isSubmittingSubject}
+							className="w-full py-3 bg-linear-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-semibold hover:shadow-lg transition-all cursor-pointer disabled:opacity-70"
+						>
+							{isSubmittingSubject ? (
+								<span className="flex items-center justify-center gap-2">
+									<svg className="w-4 h-4 animate-spin shrink-0" viewBox="0 0 24 24" fill="none">
+										<circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+										<path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+									</svg>
+									<span className="text-sm sm:text-base">{db.editingSubject ? 'Saving...' : 'Adding...'}</span>
+								</span>
+							) : (
+								<span className="text-sm sm:text-base">{db.editingSubject ? 'Save Changes' : 'Add Subject'}</span>
+							)}
+						</button>
 					</div>
 				</Modal>
 			)}
+
+			{/* ── Task Modal ── */}
 			{db.showTaskModal && (
 				<Modal title={db.editingTask ? 'Edit Task' : 'Add Task'} onClose={db.closeTaskModal}>
 					<div className="space-y-4">
@@ -907,10 +995,32 @@ export default function DashboardPage() {
 								{db.subjects.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
 							</select>
 						</div>
-						<button onClick={db.saveTask} className="w-full py-3 bg-linear-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-semibold hover:shadow-lg transition-all cursor-pointer">{db.editingTask ? 'Save Changes' : 'Add Task'}</button>
+						<button 
+							onClick={async () => {
+								setIsSubmitting(true);
+								await db.saveTask();
+								setIsSubmitting(false);
+							}} 
+							className="w-full py-3 bg-linear-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-semibold hover:shadow-lg transition-all cursor-pointer disabled:opacity-70"
+							disabled={isSubmitting}
+						>
+							{isSubmitting ? (
+								<span className="flex items-center justify-center gap-2">
+									<svg className="w-4 h-4 animate-spin shrink-0" viewBox="0 0 24 24" fill="none">
+										<circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+										<path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+									</svg>
+									<span className="text-sm sm:text-base">{db.editingTask ? 'Saving...' : 'Adding...'}</span>
+								</span>
+							) : (
+								<span className="text-sm sm:text-base">{db.editingTask ? 'Save Changes' : 'Add Task'}</span>
+							)}
+						</button>
 					</div>
 				</Modal>
 			)}
+
+			{/* ── Show Invite Modal ── */}
 			{db.showInviteModal && (
 				<Modal title="Create Invite" onClose={db.closeInviteModal}>
 					{db.createdInvite ? (
@@ -948,11 +1058,33 @@ export default function DashboardPage() {
 								</div>
 							</div>
 							{!db.inviteForm.useGenerated && <CustomizedInput label="Password" placeholder="Enter a password for this invite" value={db.inviteForm.password} onChange={e => db.setInviteForm(f => ({ ...f, password: e.target.value }))} />}
-							<button onClick={db.createInvite} className="w-full py-3 bg-linear-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-semibold hover:shadow-lg transition-all cursor-pointer">Create Invite</button>
+							<button
+								onClick={async () => { 
+									setIsSubmittingInvite(true); 
+									await db.createInvite(); 
+									setIsSubmittingInvite(false); 
+								}}
+								disabled={isSubmittingInvite}
+								className="w-full py-3 bg-linear-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-semibold hover:shadow-lg transition-all cursor-pointer disabled:opacity-70"
+							>
+								{isSubmittingInvite ? (
+									<span className="flex items-center justify-center gap-2">
+										<svg className="w-4 h-4 animate-spin shrink-0" viewBox="0 0 24 24" fill="none">
+											<circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+											<path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+										</svg>
+										<span className="text-sm sm:text-base">Creating...</span>
+									</span>
+								) : (
+									<span className="text-sm sm:text-base">Create Invite</span>
+								)}
+							</button>
 						</div>
 					)}
 				</Modal>
 			)}
+
+			{/* ── Show Join Modal ── */}
 			{db.showJoinModal && (
 				<Modal title="Join a Class" onClose={db.closeJoinModal}>
 					<div className="space-y-4">
@@ -962,7 +1094,23 @@ export default function DashboardPage() {
 									<p className="text-sm text-slate-500 dark:text-slate-400">Ask your class owner for the invite code</p>
 								</div>
 								<CustomizedInput label="Class Code" placeholder="e.g. ABC123" value={db.joinForm.code} onChange={e => db.setJoinForm(f => ({ ...f, code: e.target.value.toUpperCase() }))} maxLength={12} />
-								<button onClick={db.lookupCode} disabled={db.joinLoading} className="w-full py-3 bg-linear-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-semibold hover:shadow-lg transition-all cursor-pointer disabled:opacity-50">{db.joinLoading ? 'Looking up...' : 'Find Class'}</button>
+								<button
+									onClick={db.lookupCode}
+									disabled={db.joinLoading}
+									className="w-full py-3 bg-linear-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-semibold hover:shadow-lg transition-all cursor-pointer disabled:opacity-70"
+								>
+									{db.joinLoading ? (
+										<span className="flex items-center justify-center gap-2">
+											<svg className="w-4 h-4 animate-spin shrink-0" viewBox="0 0 24 24" fill="none">
+												<circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+												<path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+											</svg>
+											<span className="text-sm sm:text-base">Looking up...</span>
+										</span>
+									) : (
+										<span className="text-sm sm:text-base">Find Class</span>
+									)}
+								</button>
 							</>
 						) : (
 							<>
@@ -971,7 +1119,23 @@ export default function DashboardPage() {
 									<p className="text-lg font-black text-blue-700 dark:text-blue-300">{db.joinClassPreview?.name}</p>
 								</div>
 								<CustomizedInput label="Class Password" type="password" placeholder="Enter the class password" value={db.joinForm.password} onChange={e => db.setJoinForm(f => ({ ...f, password: e.target.value }))} />
-								<button onClick={db.joinClass} disabled={db.joinLoading} className="w-full py-3 bg-linear-to-r from-green-500 to-emerald-600 text-white rounded-xl font-semibold hover:shadow-lg transition-all cursor-pointer disabled:opacity-50">{db.joinLoading ? 'Joining...' : 'Join Class'}</button>
+								<button
+									onClick={db.joinClass}
+									disabled={db.joinLoading}
+									className="w-full py-3 bg-linear-to-r from-green-500 to-emerald-600 text-white rounded-xl font-semibold hover:shadow-lg transition-all cursor-pointer disabled:opacity-70"
+								>
+									{db.joinLoading ? (
+										<span className="flex items-center justify-center gap-2">
+											<svg className="w-4 h-4 animate-spin shrink-0" viewBox="0 0 24 24" fill="none">
+												<circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+												<path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+											</svg>
+											<span className="text-sm sm:text-base">Joining...</span>
+										</span>
+									) : (
+										<span className="text-sm sm:text-base">Join Class</span>
+									)}
+								</button>
 								<button onClick={() => db.setJoinStep('code')} className="w-full py-2 text-sm text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-colors cursor-pointer">← Back</button>
 							</>
 						)}
