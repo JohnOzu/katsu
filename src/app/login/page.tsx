@@ -36,7 +36,6 @@ export default function LoginPage() {
 
 	return (
 		<div className="min-h-screen overflow-hidden bg-linear-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-900 flex flex-col">
-			{/* Decorative background blobs */}
 			<div className="fixed inset-0 overflow-hidden pointer-events-none">
 				<div className="absolute top-20 right-20 w-96 h-96 bg-blue-200 dark:bg-blue-900 rounded-full mix-blend-multiply filter blur-3xl opacity-30 animate-pulse"></div>
 				<div className="absolute top-40 left-20 w-96 h-96 bg-purple-200 dark:bg-purple-900 rounded-full mix-blend-multiply filter blur-3xl opacity-20"></div>
@@ -45,15 +44,15 @@ export default function LoginPage() {
 
 			{/* Nav */}
 			<nav className="relative z-10">
-				<div className="max-w-7xl mx-auto px-6 py-6">
+				<div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 sm:py-6">
 					<div className="flex items-center justify-between">
 						<Link href="/" className="inline-flex items-center space-x-3">
-							<div className="w-12 h-12 bg-linear-to-br from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/30">
-								<svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<div className="w-10 h-10 sm:w-12 sm:h-12 bg-linear-to-br from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/30">
+								<svg className="w-5 h-5 sm:w-6 sm:h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 									<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 3v18M5 4c3-2 6 2 9 0s6 2 6 2v9s-3-2-6 0-6-2-9 0" />
 								</svg>
 							</div>
-							<span className="text-2xl font-bold bg-linear-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+							<span className="text-xl sm:text-2xl font-bold bg-linear-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
 								Katsu
 							</span>
 						</Link>
@@ -63,22 +62,20 @@ export default function LoginPage() {
 			</nav>
 
 			{/* Login Card */}
-			<div className="relative z-10 flex-1 flex items-center justify-center px-6 pt-4">
+			<div className="relative z-10 flex-1 flex items-center justify-center px-4 sm:px-6 pt-4 pb-8">
 				<div className="w-full max-w-md animate-fadeInUp">
-					<div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-3xl shadow-2xl shadow-blue-500/10 border border-slate-100 dark:border-slate-700 p-10">
+					<div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-3xl shadow-2xl shadow-blue-500/10 border border-slate-100 dark:border-slate-700 p-7 sm:p-10">
 
-						{/* Header */}
 						<div className="text-center mb-8">
-							<div className="w-16 h-16 bg-linear-to-br from-blue-600 to-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-lg shadow-blue-500/30">
-								<svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<div className="w-14 h-14 sm:w-16 sm:h-16 bg-linear-to-br from-blue-600 to-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-4 sm:mb-5 shadow-lg shadow-blue-500/30">
+								<svg className="w-7 h-7 sm:w-8 sm:h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 									<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 3v18M5 4c3-2 6 2 9 0s6 2 6 2v9s-3-2-6 0-6-2-9 0" />
 								</svg>
 							</div>
-							<h1 className="text-3xl font-black text-slate-900 dark:text-white mb-2">Welcome back</h1>
-							<p className="text-slate-500 dark:text-slate-400">Sign in to access your class</p>
+							<h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white mb-2">Welcome back</h1>
+							<p className="text-slate-500 dark:text-slate-400 text-sm">Sign in to access your class</p>
 						</div>
 
-						{/* Google Button */}
 						<button
 							className="cursor-pointer w-full flex items-center justify-center space-x-3 px-6 py-4 bg-white dark:bg-slate-700 border-2 border-slate-200 dark:border-slate-600 rounded-2xl font-semibold text-slate-700 dark:text-slate-200 hover:border-blue-400 hover:shadow-lg hover:shadow-blue-500/10 transition-all transform hover:-translate-y-0.5 group"
 							onClick={() => signInWithGoogle()}
@@ -92,37 +89,24 @@ export default function LoginPage() {
 							<span className="group-hover:text-blue-600 transition-colors">Continue with Google</span>
 						</button>
 
-						{/* Divider */}
-						<div className="flex items-center my-7">
+						<div className="flex items-center my-6 sm:my-7">
 							<div className="flex-1 h-px bg-slate-200 dark:bg-slate-600" />
 							<span className="px-4 text-xs text-slate-400 dark:text-slate-500 font-medium uppercase tracking-wider">Secure Sign-In</span>
 							<div className="flex-1 h-px bg-slate-200 dark:bg-slate-600" />
 						</div>
 
-						{/* Trust badges */}
-						<div className="flex items-center justify-center space-x-6">
-							<div className="flex items-center space-x-1.5">
-								<svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-									<path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-								</svg>
-								<span className="text-xs text-slate-500 dark:text-slate-400 font-medium">100% Free</span>
-							</div>
-							<div className="flex items-center space-x-1.5">
-								<svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-									<path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-								</svg>
-								<span className="text-xs text-slate-500 dark:text-slate-400 font-medium">No Password</span>
-							</div>
-							<div className="flex items-center space-x-1.5">
-								<svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-									<path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-								</svg>
-								<span className="text-xs text-slate-500 dark:text-slate-400 font-medium">Secure</span>
-							</div>
+						<div className="flex items-center justify-center space-x-4 sm:space-x-6">
+							{[{ label: '100% Free' }, { label: 'No Password' }, { label: 'Secure' }].map((badge) => (
+								<div key={badge.label} className="flex items-center space-x-1.5">
+									<svg className="w-4 h-4 text-green-500 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+										<path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+									</svg>
+									<span className="text-xs text-slate-500 dark:text-slate-400 font-medium">{badge.label}</span>
+								</div>
+							))}
 						</div>
 
-						{/* Terms note */}
-						<p className="text-center text-xs text-slate-400 dark:text-slate-500 mt-7 leading-relaxed">
+						<p className="text-center text-xs text-slate-400 dark:text-slate-500 mt-6 sm:mt-7 leading-relaxed">
 							By continuing, you agree to Katsu's{' '}
 							<Link href="/terms" className="text-blue-500 hover:underline">Terms of Service</Link>{' '}
 							and{' '}
@@ -130,8 +114,7 @@ export default function LoginPage() {
 						</p>
 					</div>
 
-					{/* Back link */}
-					<div className="text-center mt-6">
+					<div className="text-center mt-5">
 						<Link href="/" className="text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 text-sm font-medium transition-colors inline-flex items-center space-x-1">
 							<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 								<path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -142,8 +125,7 @@ export default function LoginPage() {
 				</div>
 			</div>
 
-			{/* Footer */}
-			<footer className="relative z-10 text-center pt-6 pb-2 my-auto text-sm text-slate-400 dark:text-slate-500">
+			<footer className="relative z-10 text-center pb-4 text-sm text-slate-400 dark:text-slate-500">
 				© 2026 Katsu. All rights reserved.
 			</footer>
 		</div>

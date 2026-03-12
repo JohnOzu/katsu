@@ -20,7 +20,7 @@ export default function Layout({
 
     return(
         <>
-            <div className="min-h-screen bg-linear-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-900">
+            <div className="min-h-screen relative bg-linear-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-900">
                 <MainHeader />
                 <main>
                     {children}
