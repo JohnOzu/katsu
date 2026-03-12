@@ -208,6 +208,7 @@ export default function DashboardPage() {
 								onClick={() => {
 									db.selectClass(c);
 									params.set('class', c.id);
+									params.set('tab', 'tasks')
 									router.replace(`/dashboard?${params.toString()}`, { scroll: false });
 									setSidebarOpen(false); 
 								}}
@@ -1171,11 +1172,23 @@ export default function DashboardPage() {
 								</div>
 								<div className="flex items-center space-x-1 ml-3 shrink-0">
 									{canUpdate(db.selectedClass!.myRole) && (
-										<button onClick={() => { setViewingTask(null); db.openEditTask(task); }} className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/30 text-slate-400 hover:text-blue-600 transition-colors cursor-pointer">
+										<button 
+											onClick={() => { 
+												setViewingTask(null); db.openEditTask(task);
+											}} 
+											className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/30 text-slate-400 hover:text-blue-600 transition-colors cursor-pointer"
+										>
 											<svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
 										</button>
 									)}
-									<button onClick={() => setViewingTask(null)} className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors cursor-pointer">
+									<button 
+										onClick={() => {
+											setViewingTask(null);
+											params.delete('task');
+											router.replace(`/dashboard?${params.toString()}`, { scroll: false });
+										}} 
+										className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors cursor-pointer"
+									>
 										<svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
 									</button>
 								</div>
