@@ -93,8 +93,14 @@ export async function GET(req: NextRequest) {
 			if (task.class_id !== member.class_id) return false;
 
 			const deadline = new Date(task.deadline);
-			const daysLeft = Math.floor(
-				(deadline.getTime() - now.getTime()) / (1000 * 60 * 60 * 24),
+			const deadlineDate = new Date(deadline);
+			deadlineDate.setHours(0, 0, 0, 0); // strip time
+
+			const todayDate = new Date(now);
+			todayDate.setHours(0, 0, 0, 0); // strip time
+
+			const daysLeft = Math.round(
+				(deadlineDate.getTime() - todayDate.getTime()) / (1000 * 60 * 60 * 24)
 			);
 
 			return thresholds.includes(daysLeft);
