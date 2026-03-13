@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, Suspense } from 'react';
 import Link from 'next/link';
 import { useUserStore } from '@lib/stores/user-store';
 import { type Role } from '@lib/mappers'
@@ -33,7 +33,7 @@ type CompletionFilter = 'all' | 'completed' | 'not-completed';
 type DeadlineFilter   = 'all' | 'overdue' | 'today' | 'tomorrow' | '3days' | 'week' | 'no-deadline';
 type SortOrder        = 'deadline-asc' | 'deadline-desc' | 'name-asc' | 'created-desc';
 
-export default function DashboardPage() {
+function DashboardPageContent() {
 	const router = useRouter();
 	const searchParams = useSearchParams();
 	const params = new URLSearchParams(searchParams.toString());
@@ -1228,4 +1228,12 @@ export default function DashboardPage() {
 			})()}
 		</div>
 	);
+}
+
+export default function DashboardPage() {
+	return(
+		<Suspense>
+			<DashboardPageContent />
+		</Suspense>
+	)
 }
