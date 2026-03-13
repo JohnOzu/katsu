@@ -21,7 +21,7 @@ export async function GET(req: NextRequest) {
 	const maxDays = 7; // furthest threshold we support
 
 	const maxDate = new Date(now);
-	maxDate.setDate(maxDate.getDate() + maxDays);
+	maxDate.setDate(maxDate.getDate() + maxDays + 1);
 
 	// Fetch all tasks with deadlines in the next 7 days
 	const { data: tasks, error: tasksError } = await supabase
@@ -122,9 +122,14 @@ export async function GET(req: NextRequest) {
             const className = Array.isArray(classesData)
                 ? classesData[0]?.name ?? 'Unknown Class'
                 : classesData?.name ?? 'Unknown Class';
-            const daysLeft = Math.ceil(
-                (deadline.getTime() - now.getTime()) / (1000 * 60 * 60 * 24),
-            );
+				
+            const deadlineDate = new Date(deadline);
+			deadlineDate.setHours(0, 0, 0, 0);
+			const todayDate = new Date(now);
+			todayDate.setHours(0, 0, 0, 0);
+			const daysLeft = Math.round(
+				(deadlineDate.getTime() - todayDate.getTime()) / (1000 * 60 * 60 * 24),
+			);
 
             emailMap[member.user_id].tasks.push({
                 taskName: task.name,
