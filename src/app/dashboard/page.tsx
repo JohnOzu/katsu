@@ -18,9 +18,9 @@ import { stripMarkdown } from '@/src/lib/dashboardUtils';
 import NotificationPreferences from '@/src/components/ui/NotificationPreferences';
 import { useRouter, useSearchParams } from 'next/navigation';
 
-const canCreate = (role: Role) => ['owner', 'editor', 'contributor'].includes(role);
-const canUpdate = (role: Role) => ['owner', 'editor'].includes(role);
-const canDelete = (role: Role) => role === 'owner';
+const canCreate = (role: Role) => ['owner', 'moderator','editor', 'contributor'].includes(role);
+const canUpdate = (role: Role) => ['owner', 'moderator', 'editor'].includes(role);
+const canDelete = (role: Role) => ['owner', 'moderator'].includes(role);
 
 const roleBadge: Record<Role, string> = {
 	owner:       'bg-purple-100 text-purple-700',
@@ -680,6 +680,7 @@ function DashboardPageContent() {
 														{db.selectedClass && db.selectedClass.myRole === 'owner' && !isMe && (
 															<>
 																<select value={m.role} onChange={(e) => db.updateMemberRole(m.userId, e.target.value as Role)} className="text-xs px-2 py-1.5 border border-slate-200 dark:border-slate-600 rounded-lg text-slate-700 dark:text-slate-300 focus:outline-none bg-white dark:bg-slate-700 cursor-pointer">
+																	<option value="moderator">Moderator</option>
 																	<option value="editor">Editor</option>
 																	<option value="contributor">Contributor</option>
 																	<option value="member">Member</option>
