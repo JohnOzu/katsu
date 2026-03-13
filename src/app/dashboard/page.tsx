@@ -519,6 +519,14 @@ function DashboardPageContent() {
 																	{publicCompletions.length > 5 && <span className="text-xs text-slate-400 ml-1">+{publicCompletions.length - 5} more</span>}
 																</div>
 															)}
+															{task.updatedBy && task.updatedAt && (
+																<div className="flex items-center space-x-1.5">
+																	<Avatar profile={db.memberProfiles[task.updatedBy]} size={16} />
+																	<span className="text-xs text-slate-400">
+																		Updated by {db.memberProfiles[task.updatedBy]?.fullName ?? 'Unknown'} · {new Date(task.updatedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}
+																	</span>
+																</div>
+															)}
 															{isDone && (
 																<label className="flex items-center space-x-2 mt-2 cursor-pointer">
 																	<input type="checkbox" checked={myCompletion?.isPublic ?? true} onChange={(e) => { e.stopPropagation(); db.updateCompletionVisibility(task.id, e.target.checked); }} className="w-3.5 h-3.5 accent-blue-600" />
@@ -1214,6 +1222,34 @@ function DashboardPageContent() {
 									<div className="flex items-center space-x-1.5">
 										{publicCompletions.slice(0, 8).map(c => <Avatar key={c.userId} profile={db.memberProfiles[c.userId]} size={28} />)}
 										{publicCompletions.length > 8 && <span className="text-xs text-slate-400 ml-1">+{publicCompletions.length - 8} more</span>}
+									</div>
+								</div>
+							)}
+							{(task.updatedAt || task.updatedBy) && (
+								<div className="px-5 sm:px-6 pb-4 border-t border-slate-50 dark:border-slate-700 pt-4">
+									<p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Last Updated</p>
+									<div className="flex items-center space-x-2">
+										{task.updatedBy && (
+											<Avatar profile={db.memberProfiles[task.updatedBy]} size={20} />
+										)}
+										<div className="flex flex-col">
+											{task.updatedBy && (
+												<span className="text-xs font-medium text-slate-700 dark:text-slate-300">
+													{db.memberProfiles[task.updatedBy]?.fullName ?? 'Unknown'}
+												</span>
+											)}
+											{task.updatedAt && (
+												<span className="text-xs text-slate-400">
+													{new Date(task.updatedAt).toLocaleDateString('en-US', {
+														weekday: 'short',
+														month: 'short',
+														day: 'numeric',
+														hour: 'numeric',
+														minute: '2-digit',
+													})}
+												</span>
+											)}
+										</div>
 									</div>
 								</div>
 							)}

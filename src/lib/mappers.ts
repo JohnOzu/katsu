@@ -54,6 +54,8 @@ export type DBTask = {
   description?: string;
   deadline: string;
   created_by: string;
+  updated_at: string | null;
+  updated_by: string | null;
 };
 
 export type DBTaskCompletions = {
@@ -104,6 +106,8 @@ export const mapTask = (t: DBTask) => ({
   description: t.description ?? null,
   deadline: t.deadline ?? null,
   createdBy: t.created_by,
+  updatedAt: t.updated_at,
+  updatedBy: t.updated_by,
 });
 
 export const mapTaskCompletion = (c: DBTaskCompletions) => ({
