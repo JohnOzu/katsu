@@ -93,7 +93,7 @@ export async function GET(req: NextRequest) {
 			if (task.class_id !== member.class_id) return false;
 
 			const deadline = new Date(task.deadline);
-			const daysLeft = Math.ceil(
+			const daysLeft = Math.floor(
 				(deadline.getTime() - now.getTime()) / (1000 * 60 * 60 * 24),
 			);
 
@@ -147,5 +147,5 @@ export async function GET(req: NextRequest) {
 
 	console.log(`[cron] Sent ${sent} emails, ${failed} failed`);
 
-	return NextResponse.json({ sent, failed, serviceRoleKey });
+	return NextResponse.json({ sent, failed });
 }
