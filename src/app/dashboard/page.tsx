@@ -677,7 +677,7 @@ function DashboardPageContent() {
 													<span className={`text-xs px-2.5 py-1 rounded-lg font-semibold capitalize ${roleBadge[m.role]}`}>{m.role}</span>
 													{/* Actions on mobile inline */}
 													<div className="flex sm:hidden items-center space-x-2">
-														{db.selectedClass && db.selexctedClass.myRole === 'owner' && !isMe && (
+														{db.selectedClass && db.selectedClass.myRole === 'owner' && !isMe && (
 															<>
 																<select value={m.role} onChange={(e) => db.updateMemberRole(m.userId, e.target.value as Role)} className="text-xs px-2 py-1.5 border border-slate-200 dark:border-slate-600 rounded-lg text-slate-700 dark:text-slate-300 focus:outline-none bg-white dark:bg-slate-700 cursor-pointer">
 																	<option value="moderator">Moderator</option>
