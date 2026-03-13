@@ -1,4 +1,4 @@
-export type Role = 'owner' | 'editor' | 'contributor' | 'member';
+export type Role = 'owner' | 'moderator' | 'editor' | 'contributor' | 'member';
 
 // ─── Raw DB types ──────────────────────────────────────────────────────────
 

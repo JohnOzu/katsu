@@ -24,6 +24,7 @@ const canDelete = (role: Role) => ['owner', 'moderator'].includes(role);
 
 const roleBadge: Record<Role, string> = {
 	owner:       'bg-purple-100 text-purple-700',
+	moderator:   'bg-orange-100 text-orange-700',
 	editor:      'bg-blue-100 text-blue-700',
 	contributor: 'bg-green-100 text-green-700',
 	member:      'bg-slate-100 text-slate-600',
