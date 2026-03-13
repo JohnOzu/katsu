@@ -14,6 +14,9 @@ export async function GET(req: NextRequest) {
 		process.env.SUPABASE_SERVICE_ROLE_KEY!, // needs service role to bypass RLS
 	);
 
+	console.log('[cron] URL:', process.env.NEXT_PUBLIC_SUPABASE_URL);
+	console.log('[cron] KEY:', process.env.SUPABASE_SERVICE_ROLE_KEY ? 'present' : 'UNDEFINED');
+
 	const now = new Date();
 	const maxDays = 7; // furthest threshold we support
 
