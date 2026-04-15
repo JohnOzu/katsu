@@ -1206,7 +1206,7 @@ function DashboardPageContent() {
 									</button>
 								</div>
 							</div>
-							{task.deadline && <div className="px-5 sm:px-6 pt-4"><DeadlinePill deadline={task.deadline} /></div>}
+							{task.deadline && <div className="px-5 sm:px-6 pt-4"><DeadlinePill deadline={task.deadline} isComplete={isDone} /></div>}
 							<div className="px-5 sm:px-6 py-5 max-h-[50vh] sm:max-h-[400px] overflow-y-auto">
 								{task.description ? (
 									<div data-color-mode="auto">
