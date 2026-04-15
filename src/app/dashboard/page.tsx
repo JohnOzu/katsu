@@ -54,12 +54,11 @@ function DashboardPageContent() {
 	const [isSubmittingClass, setIsSubmittingClass] = useState(false);
 	const [isSubmittingSubject, setIsSubmittingSubject] = useState(false);
 	const [isSubmittingInvite, setIsSubmittingInvite] = useState(false);
-	const [isSubmittingJoin, setIsSubmittingJoin] = useState(false);
 
 	const { resolvedTheme } = useTheme();
 
 	useEffect(() => {
-		setCompletionFilter('all');
+		setCompletionFilter('not-completed');
 		setDeadlineFilter('all');
 		setSubjectFilter('all');
 		setSortOrder('deadline-asc');
@@ -508,7 +507,10 @@ function DashboardPageContent() {
 														<div className="flex-1 min-w-0 space-y-2">
 															<p className={`font-semibold ${isDone ? 'line-through text-slate-400' : 'text-slate-900 dark:text-white'}`}>{task.name}</p>
 															{task.description && <p className="text-sm text-slate-500 dark:text-slate-400 line-clamp-2">{stripMarkdown(task.description)}</p>}
-															<DeadlinePill deadline={task.deadline} />
+															<DeadlinePill 
+																deadline={task.deadline} 
+																isComplete={isDone}
+															/>
 															<div className="flex items-center flex-wrap gap-2">
 																{subject && <span className="text-xs px-2 py-0.5 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-300 rounded-md font-medium border border-indigo-100 dark:border-indigo-800">{subject.name}</span>}
 																{totalCompletions > 0 && <span className="text-xs px-2 py-0.5 bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-300 rounded-md font-medium border border-green-100 dark:border-green-800">✓ {totalCompletions} done</span>}
